@@ -28,6 +28,13 @@ type Response struct {
 	RelatedTopics  []RelatedTopic `json:"RelatedTopics"`
 }
 
+// RelatedTopic describes the structure of the underlying map[string]
+// inside of the query response at "RelatedTopics": [{}]
+type RelatedTopic struct {
+	FirstURL string `json:"FirstURL"`
+	Text     string `json:"Text"`
+}
+
 // TerminalColors is a short list of strings to pass to fmt.Println()
 // to change the color of text in the terminal
 var TerminalColors = map[string]string{
@@ -39,19 +46,17 @@ var TerminalColors = map[string]string{
 	"Yellow": "\033[33m",
 }
 
-// RelatedTopic describes the structure of the underlying map[string]
-// inside of the query response at "RelatedTopics": [{}]
-type RelatedTopic struct {
-	FirstURL string `json:"FirstURL"`
-	Text     string `json:"Text"`
-}
-
 // searchPrompt() prompts the user for DuckDuckGo search query
 func searchPrompt() string {
 	fmt.Print("\nSearch: ")
 
 	inputReader := bufio.NewReader(os.Stdin)
-	query, _ := inputReader.ReadString('\n')
+	query, err := inputReader.ReadString('\n')
+
+	if err != nil {
+		panic(err)
+	}
+
 	return query
 }
 
