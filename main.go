@@ -60,7 +60,7 @@ func getAPIURL(queryString string, options Options) string {
 
 	queryString = url.QueryEscape(queryString)
 
-	return fmt.Sprintf("https://api.duckduckgo.com/?q=%s&format=%s&pretty=%d&no_redirect=%d&no_html=%d&skip_disambig=%d", queryString, options.Format, options.Pretty, options.NoRedirect, options.NoHTML, options.SkipDisambig)
+	return fmt.Sprintf("https://api.duckduckgo.com/?q=%s&format=%s&pretty=%d&no_redirect=%d&no_html=%d&skip_disambig=%d&t=duckduckgo-answers", queryString, options.Format, options.Pretty, options.NoRedirect, options.NoHTML, options.SkipDisambig)
 }
 
 func queryAPI(apiURL string) *http.Response {
