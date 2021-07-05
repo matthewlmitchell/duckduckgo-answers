@@ -1,5 +1,5 @@
 # duckduckgo-answers
-Allows you to query the ![DuckDuckGo Instant Answer API](https://api.duckduckgo.com/api) for an answer and related topics to your query
+Allows you to query the [DuckDuckGo Instant Answer API](https://api.duckduckgo.com/api) for an answer and related topics to your query
 
 Upon building the user will be prompted for a search query. An example search is shown below:
 
