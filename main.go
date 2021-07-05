@@ -47,17 +47,21 @@ var TerminalColors = map[string]string{
 }
 
 // searchPrompt() prompts the user for DuckDuckGo search query
-func searchPrompt() string {
+func searchPrompt() (string, error) {
 	fmt.Print("\nSearch: ")
 
 	inputReader := bufio.NewReader(os.Stdin)
 	query, err := inputReader.ReadString('\n')
 
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
-	return query
+	if strings.TrimSpace(query) == "" {
+		return "", fmt.Errorf("Invalid input")
+	}
+
+	return query, nil
 }
 
 // getAPIURL() formats and returns a string for querying the DuckDuckGo API with http.Get()
@@ -135,7 +139,12 @@ func main() {
 
 	for {
 		// Ask the user for a search query
-		userInput := searchPrompt()
+		userInput, err := searchPrompt()
+
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
 
 		// Encode the users input query into URL format, and return the formatted API url
 		queryURL := getAPIURL(userInput, *queryOptions)
