@@ -110,7 +110,13 @@ func unmarshalResponse(jsonInput string) Response {
 func printResponse(input Response) {
 
 	fmt.Printf("\n %s \n \n", input.AbstractText)
-	fmt.Println(TerminalColors["Green"], "More info: ")
+
+	if input.AbstractURL != "" {
+		fmt.Println(TerminalColors["Green"], "More info:")
+		fmt.Println(TerminalColors["Blue"], "\t"+input.AbstractURL+"\n")
+	}
+
+	fmt.Println(TerminalColors["Green"], "Related topics: ")
 
 	for key := range input.RelatedTopics {
 		fmt.Println(TerminalColors["Blue"], "\t"+input.RelatedTopics[key].FirstURL)
