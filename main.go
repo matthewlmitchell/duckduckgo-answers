@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -44,6 +45,18 @@ var TerminalColors = map[string]string{
 	"Blue":   "\033[34m",
 	"White":  "\033[37m",
 	"Yellow": "\033[33m",
+}
+
+// flagSearch and flagHelp define command-line launch flags for running outside of interactive mode,
+// i.e. without a search prompt
+var flagSearch = flag.String("s", "", "Specifies a search parameter for the DuckDuckGo Instant Answers API.")
+var flagHelp = flag.Bool("h", false, "Prints command usage information")
+
+func printFlagUsage() {
+	fmt.Println("Usage: ")
+	fmt.Println("\t answers.exe \t \t 'launches the program in interactive mode, allowing multiple searches'")
+	fmt.Println("\t answers.exe -h \t 'prints usage information for launch options'")
+	fmt.Println("\t answers.exe -s 'X Y' \t 'returns the search result for for the query X'")
 }
 
 // searchPrompt() prompts the user for DuckDuckGo search query
@@ -126,6 +139,37 @@ func printResponse(input Response) {
 		fmt.Println(TerminalColors["Blue"], "\t"+input.RelatedTopics[key].FirstURL)
 		fmt.Println(TerminalColors["White"], "\t"+input.RelatedTopics[key].Text+"\n")
 	}
+
+	// Reset the terminal color after we finish printing
+	fmt.Print(TerminalColors["Reset"])
+}
+
+func processAPIRequest(query string, options Options) {
+	// Encode the users input query into URL format, and return the formatted API url
+	queryURL := getAPIURL(query, options)
+
+	// Use http.Get() to retrieve an HTTP response for our query
+	apiResponse := queryAPI(queryURL)
+
+	// Read the response into our buffer reader then combine it into a single string
+	stringAnswer := responseToString(apiResponse)
+
+	// Unmarshal the JSON-encoded string into our Response{} data structure
+	parsedResponse := unmarshalResponse(stringAnswer)
+
+	// Nicely print the response data
+	printResponse(parsedResponse)
+}
+
+func initializeFlags() {
+	// Parse all flags given, if any.
+	flag.Parse()
+
+	// If a help parameter was specified, print usage information
+	if *flagHelp != false {
+		printFlagUsage()
+		os.Exit(-1)
+	}
 }
 
 func main() {
@@ -137,28 +181,24 @@ func main() {
 		SkipDisambig: 1,
 	}
 
-	for {
-		// Ask the user for a search query
-		userInput, err := searchPrompt()
+	initializeFlags()
 
-		if err != nil {
-			fmt.Println(err)
-			continue
+	// If a search parameter was specified at launch, do not run in interactive mode
+	if *flagSearch != "" {
+		processAPIRequest(*flagSearch, *queryOptions)
+	} else {
+		// Interactive mode, with a search prompt
+		for {
+			// Ask the user for a search query
+			userInput, err := searchPrompt()
+
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			processAPIRequest(userInput, *queryOptions)
 		}
-
-		// Encode the users input query into URL format, and return the formatted API url
-		queryURL := getAPIURL(userInput, *queryOptions)
-
-		// Use http.Get() to retrieve an HTTP response for our query
-		apiResponse := queryAPI(queryURL)
-
-		// Read the response into our buffer reader then combine it into a single string
-		stringAnswer := responseToString(apiResponse)
-
-		// Unmarshal the JSON-encoded string into our Response{} data structure
-		parsedResponse := unmarshalResponse(stringAnswer)
-
-		// Nicely print the response data
-		printResponse(parsedResponse)
 	}
+
 }
