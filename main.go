@@ -49,26 +49,11 @@ var TerminalColors = map[string]string{
 
 // flagSearch and flagHelp define command-line launch flags for running outside of interactive mode,
 // i.e. without a search prompt
-var flagSearch = flag.String("s", "", "Specifies a search parameter for the DuckDuckGo Instant Answers API.")
-var flagHelp = flag.Bool("h", false, "Prints command usage information")
-
-func printFlagUsage() {
-	fmt.Println("Usage: ")
-	fmt.Println("\t answers.exe \t \t 'launches the program in interactive mode, allowing multiple searches'")
-	fmt.Println("\t answers.exe -h \t 'prints usage information for launch options'")
-	fmt.Println("\t answers.exe -s 'X Y' \t 'returns the search result for for the query X'")
-}
-
-func initializeFlags() {
-	// Parse all flags given, if any.
-	flag.Parse()
-
-	// If a help parameter was specified, print usage information
-	if *flagHelp != false {
-		printFlagUsage()
-		os.Exit(-1)
-	}
-}
+var (
+	flagSearch = flag.String("s", "", "Specifies a search parameter for the DuckDuckGo Instant Answers API.")
+	flagHelp   = flag.Bool("h", false, "Prints command usage information")
+	flagEmpty  = flag.Bool("", false, "When no flags are specified, the program will run in interactive mode.")
+)
 
 // searchPrompt() prompts the user for DuckDuckGo search query
 func searchPrompt() (string, error) {
@@ -170,6 +155,17 @@ func processAPIRequest(query string, options Options) {
 
 	// Nicely print the response data
 	printResponse(parsedResponse)
+}
+
+func initializeFlags() {
+	// Parse all flags given, if any.
+	flag.Parse()
+
+	// If a help parameter was specified, print usage information
+	if *flagHelp != false {
+		flag.PrintDefaults()
+		os.Exit(-1)
+	}
 }
 
 func main() {
