@@ -59,6 +59,17 @@ func printFlagUsage() {
 	fmt.Println("\t answers.exe -s 'X Y' \t 'returns the search result for for the query X'")
 }
 
+func initializeFlags() {
+	// Parse all flags given, if any.
+	flag.Parse()
+
+	// If a help parameter was specified, print usage information
+	if *flagHelp != false {
+		printFlagUsage()
+		os.Exit(-1)
+	}
+}
+
 // searchPrompt() prompts the user for DuckDuckGo search query
 func searchPrompt() (string, error) {
 	fmt.Print("\nSearch: ")
@@ -159,17 +170,6 @@ func processAPIRequest(query string, options Options) {
 
 	// Nicely print the response data
 	printResponse(parsedResponse)
-}
-
-func initializeFlags() {
-	// Parse all flags given, if any.
-	flag.Parse()
-
-	// If a help parameter was specified, print usage information
-	if *flagHelp != false {
-		printFlagUsage()
-		os.Exit(-1)
-	}
 }
 
 func main() {
