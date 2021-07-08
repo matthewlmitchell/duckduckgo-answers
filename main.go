@@ -156,17 +156,6 @@ func processAPIRequest(query string, options Options) {
 	printResponse(parsedResponse)
 }
 
-func initializeFlags() {
-	// Parse all flags given, if any.
-	flag.Parse()
-
-	// If a help parameter was specified, print usage information
-	if *flagHelp != false {
-		flag.PrintDefaults()
-		os.Exit(-1)
-	}
-}
-
 func main() {
 	queryOptions := &Options{
 		Format:       "json",
@@ -176,24 +165,31 @@ func main() {
 		SkipDisambig: 1,
 	}
 
-	initializeFlags()
+	flag.Parse()
+
+	// If a help parameter was specified, print usage information
+	if *flagHelp != false {
+		flag.PrintDefaults()
+		os.Exit(-1)
+	}
 
 	// If a search parameter was specified at launch, do not run in interactive mode
 	if *flagSearch != "" {
 		processAPIRequest(*flagSearch, *queryOptions)
-	} else {
-		// Interactive mode, with a search prompt
-		for {
-			// Ask the user for a search query
-			userInput, err := searchPrompt()
+		os.Exit(1)
+	}
 
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
+	// Interactive mode, with a search prompt
+	for {
+		// Ask the user for a search query
+		userInput, err := searchPrompt()
 
-			processAPIRequest(userInput, *queryOptions)
+		if err != nil {
+			fmt.Println(err)
+			continue
 		}
+
+		processAPIRequest(userInput, *queryOptions)
 	}
 
 }
