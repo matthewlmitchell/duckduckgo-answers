@@ -22,11 +22,9 @@ type Options struct {
 
 // Response specifies the exact json structure of a generic API query
 type Response struct {
-	Abstract       string         `json:"Abstract"`
-	AbstractSource string         `json:"AbstractSource"`
-	AbstractText   string         `json:"AbstractText"`
-	AbstractURL    string         `json:"AbstractURL"`
-	RelatedTopics  []RelatedTopic `json:"RelatedTopics"`
+	AbstractText  string         `json:"AbstractText"`
+	AbstractURL   string         `json:"AbstractURL"`
+	RelatedTopics []RelatedTopic `json:"RelatedTopics"`
 }
 
 // RelatedTopic describes the structure of the underlying map[string]
