@@ -21,6 +21,7 @@ type Options struct {
 }
 
 // Response specifies the exact json structure of a generic API query
+// without the fields that we will not be printing to os.Stdout
 type Response struct {
 	AbstractText  string         `json:"AbstractText"`
 	AbstractURL   string         `json:"AbstractURL"`
